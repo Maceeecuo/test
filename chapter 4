@@ -538,3 +538,151 @@ array([1, 2, 3, 4])
 >>> np.in1d(values,[2,3,6])
 		 
 array([ True, False, False,  True,  True, False,  True])
+>>> arr=np.arange(10)
+		 
+>>> np.save('some_array',arr)
+		 
+>>> np.load('some_array.npy')
+		 
+array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+>>> np.savez('array_archive.npz',a=arr,b=arr)
+		 
+>>> arch=np.load('array_archive.npz')
+		 
+>>> arch['b']
+		 
+array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+>>> x=np.array([[1.,2.,3.],[4.,5.,6.]])
+		 
+>>> y=np.array([[6.,23.],[-1,7],[8,9]])
+		 
+>>> x
+		 
+array([[1., 2., 3.],
+       [4., 5., 6.]])
+>>> y
+		 
+array([[ 6., 23.],
+       [-1.,  7.],
+       [ 8.,  9.]])
+>>> x.dot(y)
+		 
+array([[ 28.,  64.],
+       [ 67., 181.]])
+>>> np.dot(x,y)
+		 
+array([[ 28.,  64.],
+       [ 67., 181.]])
+>>> np.dot(x,np.ones(3))
+		 
+array([ 6., 15.])
+>>> x@np.ones(3)
+		 
+array([ 6., 15.])
+>>> from numpy.linalg import inv,qr
+
+>>> X=np.random.randn(5,5)
+		 
+>>> mat=X.T.dot(x)
+		 
+>>> inv(mat)
+		 
+array([[-0.13841832, -0.33294896,  0.94995348,  0.28410442,  0.75129732],
+       [ 0.19960379,  0.04483041,  1.66733668,  0.12211459,  1.45549656],
+       [-0.40140725, -0.71056475, -2.38608832, -0.19152429, -1.93017821],
+       [ 0.30962148,  1.15092429,  6.47921386,  0.53553488,  5.09797484],
+       [ 1.37921737,  1.18880537,  5.65278018,  0.17877944,  4.55641187]])
+>>> mat.dot(inv(mat))
+		 
+array([[ 1.00000000e+00, -4.44089210e-16,  0.00000000e+00,
+        -8.32667268e-17,  0.00000000e+00],
+       [-1.11022302e-16,  1.00000000e+00, -4.44089210e-16,
+         0.00000000e+00, -8.88178420e-16],
+       [-4.44089210e-16, -4.44089210e-16,  1.00000000e+00,
+        -5.55111512e-17, -1.77635684e-15],
+       [ 1.11022302e-16, -2.22044605e-16, -4.44089210e-16,
+         1.00000000e+00, -4.44089210e-16],
+       [ 4.44089210e-16, -4.44089210e-16, -1.77635684e-15,
+        -2.77555756e-16,  1.00000000e+00]])
+>>> q,r=qr(mat)
+		 
+>>> r
+		 
+array([[-5.14213639,  6.60849728,  1.48677755,  0.78752918, -1.41512432],
+       [ 0.        ,  6.62367392, -6.9298103 , -2.24584575, -2.39643705],
+       [ 0.        ,  0.        , -4.10446316, -0.55301849, -1.12718347],
+       [ 0.        ,  0.        ,  0.        , -0.77313113,  0.85149986],
+       [ 0.        ,  0.        ,  0.        ,  0.        ,  0.13355638]])
+---------------------------------------------------------------------------
+>>> np.random.seed(1234)
+		 
+>>> rng=np.random.RandomState(1234)
+		 
+>>> rng.randn(10)
+		 
+array([ 0.47143516, -1.19097569,  1.43270697, -0.3126519 , -0.72058873,
+        0.88716294,  0.85958841, -0.6365235 ,  0.01569637, -2.24268495])
+-------------------------------------------------------------------------------
+>>> import random
+		 
+>>> position=0
+		 
+>>> walk=[position]
+		 
+>>> steps=1000
+		 
+>>> for i in range(steps):
+		 step=1 if random.randint(0,1) else -1
+		 position += step
+		 walk.append(position)
+
+		
+>>> plt.plot(walk[:100])
+		 
+Traceback (most recent call last):
+  File "<pyshell#139>", line 1, in <module>
+    plt.plot(walk[:100])
+NameError: name 'plt' is not defined
+>>> p1t.plot(walk[:100])
+		 
+Traceback (most recent call last):
+  File "<pyshell#140>", line 1, in <module>
+    p1t.plot(walk[:100])
+NameError: name 'p1t' is not defined
+>>> nsteps=1000
+		 
+>>> draws=np.random.randit90,2,size=nsteps)
+SyntaxError: invalid syntax
+>>> draws=np.random.randit(0,2,size=nsteps)
+Traceback (most recent call last):
+  File "<pyshell#143>", line 1, in <module>
+    draws=np.random.randit(0,2,size=nsteps)
+AttributeError: module 'numpy.random' has no attribute 'randit'
+>>> draws=np.random.randint(0,2,size=nsteps)
+>>> steps=np.where(draws>0,1,-1)
+>>> walk=steps.cumsum()
+>>> walk.min()
+-9
+>>> walk.max()
+60
+>>> (np.abs(walk))>=10).argmax()
+SyntaxError: invalid syntax
+>>> (np.abs(walk)>=10).argmax()
+297
+>>> nwalks=5000
+>>> nsteps=1000
+>>> draws=np.random.randint(0,2,size=(nwalks,nsteps))
+>>> steps=np.where(draws>0,1,-1)
+>>> walks=steps.cumsum(1)
+>>> walks
+array([[  1,   2,   3, ...,  46,  47,  46],
+       [  1,   0,   1, ...,  40,  41,  42],
+       [  1,   2,   3, ..., -26, -27, -28],
+       ...,
+       [  1,   0,   1, ...,  64,  65,  66],
+       [  1,   2,   1, ...,   2,   1,   0],
+       [ -1,  -2,  -3, ...,  32,  33,  34]], dtype=int32)
+>>> walks.max()
+122
+>>> walks.min()
+-128
