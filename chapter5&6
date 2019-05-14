@@ -780,3 +780,85 @@ Ohio   -1.0  0.0  1.0
 Texas  -1.0  0.0  1.0
 Oregon -1.0  0.0  1.0
 -----------------------------------------------------------------函数应用和映射
+>>> frame=DataFrame(np.random.randn(4,3),columns=list('bde'),index=['Utah','Ohio','Texas','Oregon'])
+>>> frame
+               b         d         e
+Utah   -0.575944 -1.465474  0.047973
+Ohio   -0.040309 -0.531257 -0.990085
+Texas  -1.510778 -0.890150  0.908079
+Oregon -0.182483 -1.506683 -0.320524
+>>> np.abs(frame)
+               b         d         e
+Utah    0.575944  1.465474  0.047973
+Ohio    0.040309  0.531257  0.990085
+Texas   1.510778  0.890150  0.908079
+Oregon  0.182483  1.506683  0.320524
+>>> f=lambda x:x.max()-x.min()
+>>> frame.apply(f)
+b    1.470470
+d    0.975425
+e    1.898164
+dtype: float64
+>>> frame.apply(f,axis=1)
+Utah      1.513448
+Ohio      0.949776
+Texas     2.418858
+Oregon    1.324200
+dtype: float64
+>>> #apply方法可以将函数应用到由各行或各列所形成的一维数组上。
+>>> def f(x):return Series([x.min(),x.max()],index=['min','max'])
+
+>>> frame.apply(f)
+            b         d         e
+min -1.510778 -1.506683 -0.990085
+max -0.040309 -0.531257  0.908079
+>>> format=lambda x:'%.2f'%x
+>>> frame.applymap(format)
+            b      d      e
+Utah    -0.58  -1.47   0.05
+Ohio    -0.04  -0.53  -0.99
+Texas   -1.51  -0.89   0.91
+Oregon  -0.18  -1.51  -0.32
+>>> #许多最为常见的数组统计功能都被实现成DataFrame的方法（如sum和mean），因此无需使用apply方法。除标量值外，传递给apply的函数还可以返回由多个值组成的Series。加入想得到frame中各个浮点值的格式化字符串，使用applymap即可。
+>>> frame['e'].map(format)
+Utah       0.05
+Ohio      -0.99
+Texas      0.91
+Oregon    -0.32
+Name: e, dtype: object
+-------------------------------------------------------------------------------排序和排名
+>>> obj=Series(range(4),index=['d','a','b','c'])
+>>> obj.sort_index()
+a    1
+b    2
+c    3
+d    0
+dtype: int64
+>>> frame=DataFrame(np.arange(8).reshape((2,4)),index=['three','one'],columns=['d','a','b','c'])
+>>> frame.sort_index(axis=1)
+       a  b  c  d
+three  1  2  3  0
+one    5  6  7  4
+>>> frame.sort_index()
+       d  a  b  c
+one    4  5  6  7
+three  0  1  2  3
+>>> frame.sort_index(axis=1,ascending=False)
+       d  c  b  a
+three  0  3  2  1
+one    4  7  6  5
+>>> obj.order()
+Traceback (most recent call last):
+  File "<pyshell#25>", line 1, in <module>
+    obj.order()
+  File "D:\python\python3.6.6\lib\site-packages\pandas\core\generic.py", line 5067, in __getattr__
+    return object.__getattribute__(self, name)
+AttributeError: 'Series' object has no attribute 'order'
+>>> obj=Series([4,7,-3,2])
+>>> obj.order()
+Traceback (most recent call last):
+  File "<pyshell#27>", line 1, in <module>
+    obj.order()
+  File "D:\python\python3.6.6\lib\site-packages\pandas\core\generic.py", line 5067, in __getattr__
+    return object.__getattribute__(self, name)
+AttributeError: 'Series' object has no attribute 'order'
