@@ -263,3 +263,520 @@ array([[2000.0, 'Ohio', 1.5, nan],
        [2002.0, 'Ohio', 3.6, nan],
        [2001.0, 'Nevada', 2.4, -1.5],
        [200.0, 'Nevada', 2.9, -1.7]], dtype=object)
+-------------------------------------------------------------------
+>>> ###索引对象
+>>> obj=Series(range(3),index=['a','b','c'])
+>>> index=obj.index
+>>> index
+Index(['a', 'b', 'c'], dtype='object')
+>>> index[1:]
+Index(['b', 'c'], dtype='object')
+>>> ###index对象是不可修改的（immutable），因此用户不能对其进行修改
+>>> index[1]='d'
+Traceback (most recent call last):
+  File "<pyshell#10>", line 1, in <module>
+    index[1]='d'
+  File "D:\python\python3.6.6\lib\site-packages\pandas\core\indexes\base.py", line 3938, in __setitem__
+    raise TypeError("Index does not support mutable operations")
+TypeError: Index does not support mutable operations
+>>> ###不可修改性非常重要，因为这样才能使index对象在多个数据结构之间安全共享
+>>> index=pd.Index(np.arange(3))
+>>> obj2=Series([1.5,-2.5,0],index=index)
+>>> obj2.index is index
+True
+>>> data={'state':['Ohio','Ohio','Ohio','Nevada','Nevada'],'year':[2000,2001,2002,2001,2002],'pop':[1.5,1.7,3.6,2.4,2.9]}
+>>> frame=DataFrame(data)
+>>> frame
+    state  year  pop
+0    Ohio  2000  1.5
+1    Ohio  2001  1.7
+2    Ohio  2002  3.6
+3  Nevada  2001  2.4
+4  Nevada  2002  2.9
+>>> DataFrame(data,columns=['year','state','pop'])
+   year   state  pop
+0  2000    Ohio  1.5
+1  2001    Ohio  1.7
+2  2002    Ohio  3.6
+3  2001  Nevada  2.4
+4  2002  Nevada  2.9
+>>> frame2=DataFrame(data,columns=['year','state','pop','debt'],index=['one','two','three','four','five'])
+>>> frame2
+       year   state  pop debt
+one    2000    Ohio  1.5  NaN
+two    2001    Ohio  1.7  NaN
+three  2002    Ohio  3.6  NaN
+four   2001  Nevada  2.4  NaN
+five   2002  Nevada  2.9  NaN
+>>> frame2.columns
+Index(['year', 'state', 'pop', 'debt'], dtype='object')
+>>> frame2['state']
+one        Ohio
+two        Ohio
+three      Ohio
+four     Nevada
+five     Nevada
+Name: state, dtype: object
+>>> frame2.year
+one      2000
+two      2001
+three    2002
+four     2001
+five     2002
+Name: year, dtype: int64
+>>> frame2.state
+one        Ohio
+two        Ohio
+three      Ohio
+four     Nevada
+five     Nevada
+Name: state, dtype: object
+>>> ###xxx.aaa跟xxx['aaa']作用一样？？
+>>> frame2.ix['three']
+year     2002
+state    Ohio
+pop       3.6
+debt      NaN
+Name: three, dtype: object
+>>> frame2.debt=16.5
+>>> frame2
+       year   state  pop  debt
+one    2000    Ohio  1.5  16.5
+two    2001    Ohio  1.7  16.5
+three  2002    Ohio  3.6  16.5
+four   2001  Nevada  2.4  16.5
+five   2002  Nevada  2.9  16.5
+>>> frame2.debt=np.arange(5.)
+>>> frame2
+       year   state  pop  debt
+one    2000    Ohio  1.5   0.0
+two    2001    Ohio  1.7   1.0
+three  2002    Ohio  3.6   2.0
+four   2001  Nevada  2.4   3.0
+five   2002  Nevada  2.9   4.0
+>>> val=Series([-1.2,-1.5,-1.7],index=['two','four','five'])
+>>> frame2['debt']=val
+>>> frame2
+       year   state  pop  debt
+one    2000    Ohio  1.5   NaN
+two    2001    Ohio  1.7  -1.2
+three  2002    Ohio  3.6   NaN
+four   2001  Nevada  2.4  -1.5
+five   2002  Nevada  2.9  -1.7
+>>> frame2['estern']=frame2.state=='Ohio'
+>>> frame2
+       year   state  pop  debt  estern
+one    2000    Ohio  1.5   NaN    True
+two    2001    Ohio  1.7  -1.2    True
+three  2002    Ohio  3.6   NaN    True
+four   2001  Nevada  2.4  -1.5   False
+five   2002  Nevada  2.9  -1.7   False
+>>> del frame2['estern']
+>>> frame2.columns
+Index(['year', 'state', 'pop', 'debt'], dtype='object')
+>>> pop={'Nevada':{2001:2.4,2002:2.9},'Ohio':{2000:1.5,2001:1.7,2002:3.6}}
+>>> frame3=DataFrame(pop)
+>>> frame3
+      Nevada  Ohio
+2000     NaN   1.5
+2001     2.4   1.7
+2002     2.9   3.6
+>>> frame3.T
+        2000  2001  2002
+Nevada   NaN   2.4   2.9
+Ohio     1.5   1.7   3.6
+>>> DataFrame(pop,index=[2001,2002,2003])
+      Nevada  Ohio
+2001     2.4   1.7
+2002     2.9   3.6
+2003     NaN   NaN
+>>> pdata={'Ohio':frame3['Ohio'][:1],'Nevada':frame3['Nevada'][:2]}
+>>> DataFrame(pdata)
+      Ohio  Nevada
+2000   1.5     NaN
+2001   NaN     2.4
+>>> frame3.index.name='year';frame3.columns.name='state'
+>>> frame3
+state  Nevada  Ohio
+year               
+2000      NaN   1.5
+2001      2.4   1.7
+2002      2.9   3.6
+>>> frame3.values
+array([[nan, 1.5],
+       [2.4, 1.7],
+       [2.9, 3.6]])
+>>> frame2.values
+array([[2000, 'Ohio', 1.5, nan],
+       [2001, 'Ohio', 1.7, -1.2],
+       [2002, 'Ohio', 3.6, nan],
+       [2001, 'Nevada', 2.4, -1.5],
+       [2002, 'Nevada', 2.9, -1.7]], dtype=object)
+>>> frame3
+state  Nevada  Ohio
+year               
+2000      NaN   1.5
+2001      2.4   1.7
+2002      2.9   3.6
+>>> 'Ohio' in frame3.columns
+True
+>>> 2003 in frame3.index
+False
+---------------------------------------------------------
+>>> obj=Series([4.5,7.2,-5.3,3.6],index=['d','b','a','c'])
+>>> obj
+d    4.5
+b    7.2
+a   -5.3
+c    3.6
+dtype: float64
+>>> obj2=obj.reindex(['a','b','c','d','e'])
+>>> obj2
+a   -5.3
+b    7.2
+c    3.6
+d    4.5
+e    NaN
+dtype: float64
+>>> obj.reindex(['a','b','c','d','e'],fill_value=0)
+a   -5.3
+b    7.2
+c    3.6
+d    4.5
+e    0.0
+dtype: float64
+>>> obj3=Series(['blue','purple','yellow'],index=[0,2,4])
+>>> obj3.reindex(range(6),method='ffill')
+0      blue
+1      blue
+2    purple
+3    purple
+4    yellow
+5    yellow
+dtype: object
+>>> frame=DataFrame(np.arange(9).reshape((3,3)),index=['a','c','d'],columns=['Ohio','Texas','California'])
+>>> frame
+   Ohio  Texas  California
+a     0      1           2
+c     3      4           5
+d     6      7           8
+>>> frame2=frame.reindex(['a','b','c','d'])
+>>> frame2
+   Ohio  Texas  California
+a   0.0    1.0         2.0
+b   NaN    NaN         NaN
+c   3.0    4.0         5.0
+d   6.0    7.0         8.0
+>>> states=['Texas','Utah','California']
+>>> frame.reindex(columns=states)
+   Texas  Utah  California
+a      1   NaN           2
+c      4   NaN           5
+d      7   NaN           8
+>>> frame.reindex(index=['a','b','c','d'],method='ffill',columns=states)
+Traceback (most recent call last):
+  File "<pyshell#75>", line 1, in <module>
+    frame.reindex(index=['a','b','c','d'],method='ffill',columns=state)
+NameError: name 'state' is not defined
+>>> frame.ix[['a','b','c','d'],states]
+Traceback (most recent call last):
+  File "<pyshell#76>", line 1, in <module>
+    frame.ix[['a','b','c','d'],states]
+  File "D:\python\python3.6.6\lib\site-packages\pandas\core\indexing.py", line 120, in __getitem__
+    return self._getitem_tuple(key)
+  File "D:\python\python3.6.6\lib\site-packages\pandas\core\indexing.py", line 877, in _getitem_tuple
+    return self._multi_take(tup)
+  File "D:\python\python3.6.6\lib\site-packages\pandas\core\indexing.py", line 934, in _multi_take
+    for (key, axis) in zip(tup, o._AXIS_ORDERS)}
+  File "D:\python\python3.6.6\lib\site-packages\pandas\core\indexing.py", line 934, in <dictcomp>
+    for (key, axis) in zip(tup, o._AXIS_ORDERS)}
+  File "D:\python\python3.6.6\lib\site-packages\pandas\core\indexing.py", line 1161, in _get_listlike_indexer
+    raise_missing=raise_missing)
+  File "D:\python\python3.6.6\lib\site-packages\pandas\core\indexing.py", line 1252, in _validate_read_indexer
+    raise KeyError("{} not in index".format(not_found))
+KeyError: "['b'] not in index"
+----------------------------------------------------------------states这段一直报错，绝望惹
+>>> obj=Series(np.arange(5.),index=['a','b','c','d','e'])
+>>> new_obj=obj.drop('c')
+>>> new_obj
+a    0.0
+b    1.0
+d    3.0
+e    4.0
+dtype: float64
+>>> obj.drop(['d','c'])
+a    0.0
+b    1.0
+e    4.0
+dtype: float64
+>>> ###drop方法换回的是一个在指定轴上删除了指定值的新对象&对于DataFrame，可以删除任意轴上的索引值
+>>> data=DataFrame(np.arange(16).reshape((4,4)),index=['Ohio','Colorado','Utah','New York'],columns=['one','two','three','four'])
+>>> data.drop(['Colorado','Ohio'])
+          one  two  three  four
+Utah        8    9     10    11
+New York   12   13     14    15
+>>> data.drop('two',axis=1)
+          one  three  four
+Ohio        0      2     3
+Colorado    4      6     7
+Utah        8     10    11
+New York   12     14    15
+>>> data.drop(['two','four'],axis=1)
+          one  three
+Ohio        0      2
+Colorado    4      6
+Utah        8     10
+New York   12     14
+--------------------------------------------------------------索引、选取和过滤
+>>> obj=Series(np.arange(4.),index=['a','b','c','d'])
+>>> obj['b']
+1.0
+>>> obj[1]
+1.0
+>>> obj[2:4]
+c    2.0
+d    3.0
+dtype: float64
+>>> obj[['b','a','d']]
+b    1.0
+a    0.0
+d    3.0
+dtype: float64
+>>> obj[[1,3]]
+b    1.0
+d    3.0
+dtype: float64
+>>> obj[obj<2]
+a    0.0
+b    1.0
+dtype: float64
+>>> obj['b':'c']
+b    1.0
+c    2.0
+dtype: float64
+>>> obj['b':'c']=5
+>>> obj
+a    0.0
+b    5.0
+c    5.0
+d    3.0
+dtype: float64
+>>> data=DataFrame(np.arange(16).reshape((4,4)),index=['Ohio','Colorado','Utah','NewYork'],columns=['one','two','three','four'])
+>>> data
+          one  two  three  four
+Ohio        0    1      2     3
+Colorado    4    5      6     7
+Utah        8    9     10    11
+NewYork    12   13     14    15
+>>> data['two']
+Ohio         1
+Colorado     5
+Utah         9
+NewYork     13
+Name: two, dtype: int32
+>>> data[['three','one']]
+          three  one
+Ohio          2    0
+Colorado      6    4
+Utah         10    8
+NewYork      14   12
+>>> data[:2]
+          one  two  three  four
+Ohio        0    1      2     3
+Colorado    4    5      6     7
+>>> data[2:]
+         one  two  three  four
+Utah       8    9     10    11
+NewYork   12   13     14    15
+>>> data[data['three']>5]
+          one  two  three  four
+Colorado    4    5      6     7
+Utah        8    9     10    11
+NewYork    12   13     14    15
+>>> data<5
+            one    two  three   four
+Ohio       True   True   True   True
+Colorado   True  False  False  False
+Utah      False  False  False  False
+NewYork   False  False  False  False
+>>> data[data<5]=0
+>>> data
+          one  two  three  four
+Ohio        0    0      0     0
+Colorado    0    5      6     7
+Utah        8    9     10    11
+NewYork    12   13     14    15
+>>> data.ix[['Colorado','Utah'],[3,0,1]]
+          four  one  two
+Colorado     7    0    5
+Utah        11    8    9
+>>> data.ix[2]
+one       8
+two       9
+three    10
+four     11
+Name: Utah, dtype: int32
+>>> data.ix[:'Utah','two']
+Ohio        0
+Colorado    5
+Utah        9
+Name: two, dtype: int32
+>>> data.ix[data.three>5,:3]
+          one  two  three
+Colorado    0    5      6
+Utah        8    9     10
+NewYork    12   13     14
+-------------------------------------------------------------------------------算术运算和数据对齐
+>>> data.ix[['Colorado','Utah'],[3,0,1]]
+          four  one  two
+Colorado     7    0    5
+Utah        11    8    9
+>>> data.ix[2]
+one       8
+two       9
+three    10
+four     11
+Name: Utah, dtype: int32
+>>> data.ix[:'Utah','two']
+Ohio        0
+Colorado    5
+Utah        9
+Name: two, dtype: int32
+>>> data.ix[data.three>5,:3]
+          one  two  three
+Colorado    0    5      6
+Utah        8    9     10
+NewYork    12   13     14
+>>> s1=Series([7.3,-2.5,3.4,1.5],index=['a','c','d','e'])
+>>> s2=Series([-2.1,3.6,-1.5,4,3.1],index=['a','c','e','f','g'])
+>>> s1
+a    7.3
+c   -2.5
+d    3.4
+e    1.5
+dtype: float64
+>>> s2
+a   -2.1
+c    3.6
+e   -1.5
+f    4.0
+g    3.1
+dtype: float64
+>>> s1+s2
+a    5.2
+c    1.1
+d    NaN
+e    0.0
+f    NaN
+g    NaN
+dtype: float64
+>>> df1=DataFrame(np.arange(9.).reshape((3,3)),columns=list('bcd'),index=['Ohio','Texas','Colorado'])
+>>> df2=DataFrame(np.arange(12.).reshape((4,3)),columns=list('bde'),index=['Utah','Ohio','Texas','Oregon'])
+>>> df1
+            b    c    d
+Ohio      0.0  1.0  2.0
+Texas     3.0  4.0  5.0
+Colorado  6.0  7.0  8.0
+>>> df2
+          b     d     e
+Utah    0.0   1.0   2.0
+Ohio    3.0   4.0   5.0
+Texas   6.0   7.0   8.0
+Oregon  9.0  10.0  11.0
+>>> df1+df2
+            b   c     d   e
+Colorado  NaN NaN   NaN NaN
+Ohio      3.0 NaN   6.0 NaN
+Oregon    NaN NaN   NaN NaN
+Texas     9.0 NaN  12.0 NaN
+Utah      NaN NaN   NaN NaN
+>>> df1=DataFrame(np.arange(12.).reshape((3,4)),columns=list('abcd'))
+>>> df2=DataFrame(np.arange(20.).reshape((4,5)),columns=list('abcde'))
+>>> df1
+     a    b     c     d
+0  0.0  1.0   2.0   3.0
+1  4.0  5.0   6.0   7.0
+2  8.0  9.0  10.0  11.0
+>>> df2
+      a     b     c     d     e
+0   0.0   1.0   2.0   3.0   4.0
+1   5.0   6.0   7.0   8.0   9.0
+2  10.0  11.0  12.0  13.0  14.0
+3  15.0  16.0  17.0  18.0  19.0
+>>> df1+df2
+      a     b     c     d   e
+0   0.0   2.0   4.0   6.0 NaN
+1   9.0  11.0  13.0  15.0 NaN
+2  18.0  20.0  22.0  24.0 NaN
+3   NaN   NaN   NaN   NaN NaN
+>>> ###使用df1的add方法，传入df2以及一个fill_value参数
+>>> df1.add(df2,fill_value=0)
+      a     b     c     d     e
+0   0.0   2.0   4.0   6.0   4.0
+1   9.0  11.0  13.0  15.0   9.0
+2  18.0  20.0  22.0  24.0  14.0
+3  15.0  16.0  17.0  18.0  19.0
+>>> df1.reindex(columns=df2.columns,fill_value=0)
+     a    b     c     d  e
+0  0.0  1.0   2.0   3.0  0
+1  4.0  5.0   6.0   7.0  0
+2  8.0  9.0  10.0  11.0  0
+-----------------------------------------------------------DataFrame和Series之间的运算
+>>> arr=np.arange(12.).reshape((3,4))
+>>> arr
+array([[ 0.,  1.,  2.,  3.],
+       [ 4.,  5.,  6.,  7.],
+       [ 8.,  9., 10., 11.]])
+>>> arr[0]
+array([0., 1., 2., 3.])
+>>> arr-arr[0]
+array([[0., 0., 0., 0.],
+       [4., 4., 4., 4.],
+       [8., 8., 8., 8.]])
+>>> ###这就叫广播
+>>> frame=DataFrame(np.arange(12.).reshape((4,3)),columns=list('bde'),index=['Utah','Ohio','Texas','Oregon'])
+>>> series=frame.ix[0]
+>>> frame
+          b     d     e
+Utah    0.0   1.0   2.0
+Ohio    3.0   4.0   5.0
+Texas   6.0   7.0   8.0
+Oregon  9.0  10.0  11.0
+>>> series
+b    0.0
+d    1.0
+e    2.0
+Name: Utah, dtype: float64
+>>> frame-series
+          b    d    e
+Utah    0.0  0.0  0.0
+Ohio    3.0  3.0  3.0
+Texas   6.0  6.0  6.0
+Oregon  9.0  9.0  9.0
+>>> series2=Series(range(3),index=['b','e','f'])
+>>> frame+series2
+          b   d     e   f
+Utah    0.0 NaN   3.0 NaN
+Ohio    3.0 NaN   6.0 NaN
+Texas   6.0 NaN   9.0 NaN
+Oregon  9.0 NaN  12.0 NaN
+>>> series3=frame['d']
+>>> frame
+          b     d     e
+Utah    0.0   1.0   2.0
+Ohio    3.0   4.0   5.0
+Texas   6.0   7.0   8.0
+Oregon  9.0  10.0  11.0
+>>> series3
+Utah       1.0
+Ohio       4.0
+Texas      7.0
+Oregon    10.0
+Name: d, dtype: float64
+>>> frame.sub(series3,axis=0)
+          b    d    e
+Utah   -1.0  0.0  1.0
+Ohio   -1.0  0.0  1.0
+Texas  -1.0  0.0  1.0
+Oregon -1.0  0.0  1.0
+-----------------------------------------------------------------函数应用和映射
