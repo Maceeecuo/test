@@ -1578,7 +1578,79 @@ Freq: D, dtype: int32
 >>> data_dict={h:v for h,v in zip(header,zip(*values))}
 >>> data_dict
 {'a': ('1', '1'), 'b': ('2', '2'), 'c': ('3', '3'), '': ('', '4')}
+>>> class my_dialect(csv.Dialect):
+	lineterminator='\n'
+	dlimiter=';'
+	quotechar='"'
+	quoting=csv.QUOTE_MINIMAL
+reader=csv.reader(f,delimiter='|')
+SyntaxError: invalid syntax
+>>> file='D:\python\pra\ex8.csv'
+>>> with open(file,'w')as f:
+	writer = csv.writer(f, dialect=my_dialect)
+	writer.writerow(('one', 'two', 'three'))
+	writer.writerow(('1', '2', '3'))
+	writer.writerow(('4', '5', '6'))
+	writer.writerow(('7', '8', '9'))
 
+	
+Traceback (most recent call last):
+  File "<pyshell#108>", line 2, in <module>
+    writer = csv.writer(f, dialect=my_dialect)
+NameError: name 'my_dialect' is not defined
+>>> obj="""
+{"name":"Wes",
+"places_lived":["United States","Spain","Germany"],
+"pet":null,
+"siblings":[{"name":"Scott","age":30,"pets":["Zeus","Zuko"]},
+	   {"name":"Katie","age":38,
+	   "pets":["Sixes","Stache","Cisco"]}]
+}
+"""
+>>> import json
+>>> result=json.loads(obj)
+>>> result
+{'name': 'Wes', 'places_lived': ['United States', 'Spain', 'Germany'], 'pet': None, 'siblings': [{'name': 'Scott', 'age': 30, 'pets': ['Zeus', 'Zuko']}, {'name': 'Katie', 'age': 38, 'pets': ['Sixes', 'Stache', 'Cisco']}]}
+>>> asjson=json.dumps(result)
+>>> siblings=pd.DataFrame(result['siblings'],columns=['name','age'])
+>>> asjson=json.dumps(result)
+>>> siblings=pd.DataFrame(result['siblings'],columns=['name','age'])
+>>> siblings
+    name  age
+0  Scott   30
+1  Katie   38
+>>> file='D:\python\pra\ex1.csv'
+>>> frame=pd.read_csv(file)
+>>> frame
+   a   b   c   d message
+0  1   2   3   4   hello
+1  5   6   7   8   world
+2  9  10  11  12     foo
+>>> frame.to_pickle('frame_pickle')
+>>> pd.read_pickle('frame_pickle')
+   a   b   c   d message
+0  1   2   3   4   hello
+1  5   6   7   8   world
+2  9  10  11  12     foo
+>>>  file1='D:\python\pra\ex1.xlsx'
+SyntaxError: unexpected indent
+>>> file1='D:\python\pra\ex1.xlsx'
+>>> xlsx=pd.ExcelFile(file)
+Traceback (most recent call last):
+  File "D:\python\python3.6.6\lib\site-packages\pandas\io\excel.py", line 391, in __init__
+    import xlrd
+ModuleNotFoundError: No module named 'xlrd'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<pyshell#134>", line 1, in <module>
+    xlsx=pd.ExcelFile(file)
+  File "D:\python\python3.6.6\lib\site-packages\pandas\io\excel.py", line 653, in __init__
+    self._reader = self._engines[engine](self._io)
+  File "D:\python\python3.6.6\lib\site-packages\pandas\io\excel.py", line 393, in __init__
+    raise ImportError(err_msg)
+ImportError: Install xlrd >= 1.0.0 for Excel support
 
 
 
