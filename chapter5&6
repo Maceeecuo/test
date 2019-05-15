@@ -1362,7 +1362,227 @@ a    1         2    1
      2         8    4
 b    1        14    7
      2        20   10
-     
+>>> frame=DataFrame({'a':range(7),'b':range(7,0,-1),'c':['one','one','one','two','two','two','two'],'d':[0,1,2,0,1,2,3]})
+>>> frame
+   a  b    c  d
+0  0  7  one  0
+1  1  6  one  1
+2  2  5  one  2
+3  3  4  two  0
+4  4  3  two  1
+5  5  2  two  2
+6  6  1  two  3
+>>> frame2=frame.set_index(['c','d'])
+>>> frame2
+       a  b
+c   d      
+one 0  0  7
+    1  1  6
+    2  2  5
+two 0  3  4
+    1  4  3
+    2  5  2
+    3  6  1
+>>> frame.set_index(['c','d'],drop=False)
+       a  b    c  d
+c   d              
+one 0  0  7  one  0
+    1  1  6  one  1
+    2  2  5  one  2
+two 0  3  4  two  0
+    1  4  3  two  1
+    2  5  2  two  2
+    3  6  1  two  3
+>>> #DataFrame的set_index函数会将其中一个或多个列转换为行索引，创建一个新的DataFrame；reset_index的功能跟set_index刚好相反，层次化索引的级别会被转移到列里面。
+>>> frame2.reset_index()
+     c  d  a  b
+0  one  0  0  7
+1  one  1  1  6
+2  one  2  2  5
+3  two  0  3  4
+4  two  1  4  3
+5  two  2  5  2
+6  two  3  6  1
+---------------------------------------------------------------------chapter6
+>>> file='D:\python\pra\ex1.csv'
+>>> df=pd.read_csv(file)
+>>> df
+   a   b   c   d message
+0  1   2   3   4   hello
+1  5   6   7   8   world
+2  9  10  11  12     foo
+>>> pd.read_table(file,sep=',')
+
+Warning (from warnings module):
+  File "__main__", line 1
+FutureWarning: read_table is deprecated, use read_csv instead.
+   a   b   c   d message
+0  1   2   3   4   hello
+1  5   6   7   8   world
+2  9  10  11  12     foo
+>>> pd.read_csv(file,names=['a','b','c','d','message'])
+    a   b   c      d  message
+1   2   3   4  hello      NaN
+5   6   7   8  world      NaN
+9  10  11  12    foo      NaN
+>>> pd.read_csv(file,header=None)
+   0   1   2   3      4
+0  1   2   3   4  hello
+1  5   6   7   8  world
+2  9  10  11  12    foo
+>>> pd.read_csv(file,names=['a','b','c','d','message'])
+   a   b   c   d message
+0  1   2   3   4   hello
+1  5   6   7   8   world
+2  9  10  11  12     foo
+>>> names=['a','b','c','d','message']
+>>> pd.read_csv(file,names=names,index_col='message')
+         a   b   c   d
+message               
+hello    1   2   3   4
+world    5   6   7   8
+foo      9  10  11  12
+>>> file='D:\python\pra\ex3.csv'
+>>> list(open(file))
+[',,A,B,"C\',"\n', ',\'aaa,-0.264438,-1.026059,"-0.619500,"\n', ',\'bbb,0.927272,0.302904,"-0.032399,"\n', ',\'ccc,-0.264273,-0.386314,"-0.217601,"\n', ',\'ddd,-0.871858,-0.348382,"1.100491,"\n']
+>>> result=pd.read_table(file)
+
+Warning (from warnings module):
+  File "__main__", line 1
+FutureWarning: read_table is deprecated, use read_csv instead, passing sep='\t'.
+>>> result
+                              ,,A,B,"C',"
+0  ,'aaa,-0.264438,-1.026059,"-0.619500,"
+1    ,'bbb,0.927272,0.302904,"-0.032399,"
+2  ,'ccc,-0.264273,-0.386314,"-0.217601,"
+3   ,'ddd,-0.871858,-0.348382,"1.100491,"
+>>> #是我创建文件的时候有问题吗 这个表格好奇怪哦
+>>> result
+                              ,,A,B,"C',"
+0  ,'aaa,-0.264438,-1.026059,"-0.619500,"
+1    ,'bbb,0.927272,0.302904,"-0.032399,"
+2  ,'ccc,-0.264273,-0.386314,"-0.217601,"
+3   ,'ddd,-0.871858,-0.348382,"1.100491,"
+>>> file='D:\python\pra\ex1.csv'
+>>> list(open(file))
+['a,b,c,d,message\n', '1,2,3,4,hello\n', '5,6,7,8,world\n', '9,10,11,12,foo\n']
+>>> pd.read_csv(file)
+   a   b   c   d message
+0  1   2   3   4   hello
+1  5   6   7   8   world
+2  9  10  11  12     foo
+>>> file='D:\python\pra\ex5.csv'
+>>> result=pd.read_csv(file)
+>>> result
+   Unnamed: 0 something  a   b     c   d message  Unnamed: 7
+0         NaN       one  1   2   3.0   4     NaN         NaN
+1         NaN       two  5   6   NaN   8   world         NaN
+2         NaN     three  9  10  11.0  12     foo         NaN
+>>> result
+   Unnamed: 0 something  a   b     c   d message  Unnamed: 7
+0         NaN       one  1   2   3.0   4     NaN         NaN
+1         NaN       two  5   6   NaN   8   world         NaN
+2         NaN     three  9  10  11.0  12     foo         NaN
+>>> result
+   Unnamed: 0 something  a   b     c   d message  Unnamed: 7
+0         NaN       one  1   2   3.0   4     NaN         NaN
+1         NaN       two  5   6   NaN   8   world         NaN
+2         NaN     three  9  10  11.0  12     foo         NaN
+>>> result
+   Unnamed: 0 something  a   b     c   d message  Unnamed: 7
+0         NaN       one  1   2   3.0   4     NaN         NaN
+1         NaN       two  5   6   NaN   8   world         NaN
+2         NaN     three  9  10  11.0  12     foo         NaN
+>>> pd.isnull(result)
+   Unnamed: 0  something      a      b      c      d  message  Unnamed: 7
+0        True      False  False  False  False  False     True        True
+1        True      False  False  False   True  False    False        True
+2        True      False  False  False  False  False    False        True
+>>> result=pd.read_csv(file,na_values=['NULL'])
+Traceback (most recent call last):
+  File "<pyshell#61>", line 1, in <module>
+    result=pd.read_csv(file,na_values=['NULL'])
+  File "D:\python\python3.6.6\lib\site-packages\pandas\io\parsers.py", line 702, in parser_f
+    return _read(filepath_or_buffer, kwds)
+  File "D:\python\python3.6.6\lib\site-packages\pandas\io\parsers.py", line 429, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "D:\python\python3.6.6\lib\site-packages\pandas\io\parsers.py", line 895, in __init__
+    self._make_engine(self.engine)
+  File "D:\python\python3.6.6\lib\site-packages\pandas\io\parsers.py", line 1122, in _make_engine
+    self._engine = CParserWrapper(self.f, **self.options)
+  File "D:\python\python3.6.6\lib\site-packages\pandas\io\parsers.py", line 1853, in __init__
+    self._reader = parsers.TextReader(src, **kwds)
+  File "pandas\_libs\parsers.pyx", line 387, in pandas._libs.parsers.TextReader.__cinit__
+  File "pandas\_libs\parsers.pyx", line 705, in pandas._libs.parsers.TextReader._setup_parser_source
+FileNotFoundError: [Errno 2] File b'D:\\python\\pra\\ex5.csv' does not exist: b'D:\\python\\pra\\ex5.csv'
+>>> file='D:\python\pra\ex6.csv'
+>>> result=pd.read_csv(file,na_values=['NULL'])
+>>> result
+  something  a   b     c   d message
+0       one  1   2   3.0   4     NaN
+1       two  5   6   NaN   8   world
+2     three  9  10  11.0  12     foo
+>>> pd.options.display.max_rows=10
+>>> data=pd.read_csv(file)
+>>> data
+  something  a   b     c   d message
+0       one  1   2   3.0   4     NaN
+1       two  5   6   NaN   8   world
+2     three  9  10  11.0  12     foo
+>>> data.to_csv('out.csv')
+>>> !type out.csv
+SyntaxError: invalid syntax
+>>> !type out.csv
+SyntaxError: invalid syntax
+>>> ,something,a,b,c,d,message
+SyntaxError: invalid syntax
+>>> 0,one,1,2,3.0,4,
+Traceback (most recent call last):
+  File "<pyshell#77>", line 1, in <module>
+    0,one,1,2,3.0,4,
+NameError: name 'one' is not defined
+>>> 1,two,5,6,,8,world
+SyntaxError: invalid syntax
+>>> 2,three,9,10,11.0,12,foo
+Traceback (most recent call last):
+  File "<pyshell#79>", line 1, in <module>
+    2,three,9,10,11.0,12,foo
+NameError: name 'three' is not defined
+>>> data=pd.date_range('1/1/2000',periods=7)
+>>> data
+DatetimeIndex(['2000-01-01', '2000-01-02', '2000-01-03', '2000-01-04',
+               '2000-01-05', '2000-01-06', '2000-01-07'],
+              dtype='datetime64[ns]', freq='D')
+>>> ts=Series(np.arange(7),index=data)
+>>> ts
+2000-01-01    0
+2000-01-02    1
+2000-01-03    2
+2000-01-04    3
+2000-01-05    4
+2000-01-06    5
+2000-01-07    6
+Freq: D, dtype: int32
+>>> import csv
+>>> file='D:\python\pra\ex7.csv'
+>>> f=open(file)
+>>> reader=csv.reader(f)
+>>> for line in reader:print (line)
+
+['a', 'b', 'c', '']
+['1', '2', '3', '']
+['1', '2', '3', '4']
+>>> with open(file) as f:lines=list(csv.reader(f))
+
+>>> header,values=lines[0],lines[1:]
+>>> data_dict={h:v for h,v in zip(header,zip(*values))}
+>>> data_dict
+{'a': ('1', '1'), 'b': ('2', '2'), 'c': ('3', '3'), '': ('', '4')}
+
+
+
+
+
      
 
 
