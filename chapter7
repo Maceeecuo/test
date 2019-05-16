@@ -96,3 +96,435 @@
 7   a      2      2
 8   a      4      0
 9   a      4      2
+>>> left=DataFrame({'key1':['foo','foo','bar'],
+		    'key2':['one','two','one'],
+		    'lval':[1,2,3]})
+>>> right=DataFrame({'key1':['foo','foo','bar','bar'],
+		     'key2':['one','one','one','two'],
+		     'rval':[4,5,6,7]})
+>>> pd.merge(left,right,on=['key1','key2'],how='outer')
+  key1 key2  lval  rval
+0  foo  one   1.0   4.0
+1  foo  one   1.0   5.0
+2  foo  two   2.0   NaN
+3  bar  one   3.0   6.0
+4  bar  two   NaN   7.0
+>>> pd.merge(left,right,on='key1')
+  key1 key2_x  lval key2_y  rval
+0  foo    one     1    one     4
+1  foo    one     1    one     5
+2  foo    two     2    one     4
+3  foo    two     2    one     5
+4  bar    one     3    one     6
+5  bar    one     3    two     7
+>>> pd.merge(left,right,on='key1',suffixes=('_left','_right'))
+  key1 key2_left  lval key2_right  rval
+0  foo       one     1        one     4
+1  foo       one     1        one     5
+2  foo       two     2        one     4
+3  foo       two     2        one     5
+4  bar       one     3        one     6
+5  bar       one     3        two     7
+>>> #参数          说明
+>>> #left    参与合并的左侧DataFrame
+>>> #right   参与合并的右侧DataFrame
+>>> #how     "inner" "outer" "left" "right"其中之一，默认为"inner"
+>>> left1=DataFrame({'key':['a','b','a','a','b','c'],
+		     'value':range(6)})
+>>> right1=DataFrame({'group_val':[3.5,7]},index=['a','b'])
+>>> left1
+  key  value
+0   a      0
+1   b      1
+2   a      2
+3   a      3
+4   b      4
+5   c      5
+>>> right1
+   group_val
+a        3.5
+b        7.0
+>>> pd.merge(left1,right1,left_on='key',right_index=True)
+  key  value  group_val
+0   a      0        3.5
+2   a      2        3.5
+3   a      3        3.5
+1   b      1        7.0
+4   b      4        7.0
+>>> pd.merge(left1,right1,left_on='key',right_index=True,how='outer')
+  key  value  group_val
+0   a      0        3.5
+2   a      2        3.5
+3   a      3        3.5
+1   b      1        7.0
+4   b      4        7.0
+5   c      5        NaN
+>>> lefth=DataFrame({'key1':['Ohio','Ohio','Ohio','Nevada','Nevada'],
+		     'key2':[2000,2001,2002,2001,2002],
+		     'data':np.arange(5,)})
+>>> righth=DataFrame(np.arange(12).reshape((6,2)),
+		     index=[['Nevada','Nevada','Ohio','Ohio','Ohio','Ohio'],
+			    [2001,2000,2000,2000,2001,2002]],
+		     columns=['event1','event2'])
+>>> lefth
+     key1  key2  data
+0    Ohio  2000     0
+1    Ohio  2001     1
+2    Ohio  2002     2
+3  Nevada  2001     3
+4  Nevada  2002     4
+>>> righth
+             event1  event2
+Nevada 2001       0       1
+       2000       2       3
+Ohio   2000       4       5
+       2000       6       7
+       2001       8       9
+       2002      10      11
+>>> pd.merge(lefth,righth,left_on=['key1','key2'],right_index=True)
+     key1  key2  data  event1  event2
+0    Ohio  2000     0       4       5
+0    Ohio  2000     0       6       7
+1    Ohio  2001     1       8       9
+2    Ohio  2002     2      10      11
+3  Nevada  2001     3       0       1
+>>> pd.merge(lefth,righth,left_on=['key1','key2'],
+	     right_index=True,how='outer')
+     key1  key2  data  event1  event2
+0    Ohio  2000   0.0     4.0     5.0
+0    Ohio  2000   0.0     6.0     7.0
+1    Ohio  2001   1.0     8.0     9.0
+2    Ohio  2002   2.0    10.0    11.0
+3  Nevada  2001   3.0     0.0     1.0
+4  Nevada  2002   4.0     NaN     NaN
+4  Nevada  2000   NaN     2.0     3.0
+>>> left2=DataFrame([[1.,2.],[3.,4.],[5.,6.]],index=['a','c','e'],
+		    columns=['Ohio','Nevada'])
+>>> right2=DataFrame([[7.,8.],[9.,10.],[11.,12.],[13,14]],
+		     index=['b','c','d','e'],columns=['Missouri','Alabama'])
+>>> left2
+   Ohio  Nevada
+a   1.0     2.0
+c   3.0     4.0
+e   5.0     6.0
+>>> right2
+   Missouri  Alabama
+b       7.0      8.0
+c       9.0     10.0
+d      11.0     12.0
+e      13.0     14.0
+>>> pd.merge(left2,right2,how='outer',left_index=True,right_index=True)
+   Ohio  Nevada  Missouri  Alabama
+a   1.0     2.0       NaN      NaN
+b   NaN     NaN       7.0      8.0
+c   3.0     4.0       9.0     10.0
+d   NaN     NaN      11.0     12.0
+e   5.0     6.0      13.0     14.0
+>>> left2.join(right2,how='outer')
+   Ohio  Nevada  Missouri  Alabama
+a   1.0     2.0       NaN      NaN
+b   NaN     NaN       7.0      8.0
+c   3.0     4.0       9.0     10.0
+d   NaN     NaN      11.0     12.0
+e   5.0     6.0      13.0     14.0
+>>> #join可以更方便地实现按索引合并。
+>>> left1.join(right1,on='key')
+  key  value  group_val
+0   a      0        3.5
+1   b      1        7.0
+2   a      2        3.5
+3   a      3        3.5
+4   b      4        7.0
+5   c      5        NaN
+>>> another=DataFrame([[7.,8.],[9.,10.],[11.,12.],[16.,17.]],
+		      index=['a','c','e','f'],columns=['New York','Oregon'])
+>>> left2.join([right2,another])
+   Ohio  Nevada  Missouri  Alabama  New York  Oregon
+a   1.0     2.0       NaN      NaN       7.0     8.0
+c   3.0     4.0       9.0     10.0       9.0    10.0
+e   5.0     6.0      13.0     14.0      11.0    12.0
+>>> right2.join([another])
+   Missouri  Alabama  New York  Oregon
+b       7.0      8.0       NaN     NaN
+c       9.0     10.0       9.0    10.0
+d      11.0     12.0       NaN     NaN
+e      13.0     14.0      11.0    12.0
+>>> left2.join([right2,another],how='outer')
+
+Warning (from warnings module):
+  File "D:\python\python3.6.6\lib\site-packages\pandas\core\frame.py", line 6848
+    verify_integrity=True)
+FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass 'sort=False'.
+
+To retain the current behavior and silence the warning, pass 'sort=True'.
+
+   Ohio  Nevada  Missouri  Alabama  New York  Oregon
+a   1.0     2.0       NaN      NaN       7.0     8.0
+b   NaN     NaN       7.0      8.0       NaN     NaN
+c   3.0     4.0       9.0     10.0       9.0    10.0
+d   NaN     NaN      11.0     12.0       NaN     NaN
+e   5.0     6.0      13.0     14.0      11.0    12.0
+f   NaN     NaN       NaN      NaN      16.0    17.0
+>>> arr=np.arange(12).reshape((3,4))
+>>> arr
+array([[ 0,  1,  2,  3],
+       [ 4,  5,  6,  7],
+       [ 8,  9, 10, 11]])
+>>> #concatenation连接
+>>> np.concatenate([arr,arr],axis=1)
+array([[ 0,  1,  2,  3,  0,  1,  2,  3],
+       [ 4,  5,  6,  7,  4,  5,  6,  7],
+       [ 8,  9, 10, 11,  8,  9, 10, 11]])
+>>> s1=Series([0,1],index=['a','b'])
+>>> s2=Series([2,3,4],index=['c','d','e'])
+>>> s3=Series([5,6],index=['f','g'])
+>>> pd.concat([s1,s2,s3])
+a    0
+b    1
+c    2
+d    3
+e    4
+f    5
+g    6
+dtype: int64
+>>> #对这些对象调用concat可以将值和索引黏在一起
+>>> #默认情况下，concat是在axis=1上工作的，最终产生一个新的Series。如果传入axis=1,则结果就会变成一个DataFrame(axis是列)
+>>> pd.concat([s1,s2,s3],axis=1)
+
+Warning (from warnings module):
+  File "__main__", line 1
+FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass 'sort=False'.
+
+To retain the current behavior and silence the warning, pass 'sort=True'.
+
+     0    1    2
+a  0.0  NaN  NaN
+b  1.0  NaN  NaN
+c  NaN  2.0  NaN
+d  NaN  3.0  NaN
+e  NaN  4.0  NaN
+f  NaN  NaN  5.0
+g  NaN  NaN  6.0
+>>> s4=pd.concat([s1*5,s3])
+>>> pd.concat([s1,s4],axis=1)
+     0  1
+a  0.0  0
+b  1.0  5
+f  NaN  5
+g  NaN  6
+>>> pd.concat([s1,s4],axis=1,join='inner')
+   0  1
+a  0  0
+b  1  5
+>>> pd.concat([s1,s4],axis=1,join_axes=[['a','c','b','e']])
+     0    1
+a  0.0  0.0
+c  NaN  NaN
+b  1.0  5.0
+e  NaN  NaN
+>>> result=pd.concat([s1,s1,s3],keys=['one','two','three'])
+>>> result
+one    a    0
+       b    1
+two    a    0
+       b    1
+three  f    5
+       g    6
+dtype: int64
+>>> #假如想在连接轴上创建一个层次化索引，使用keys参数即可达到这个目的
+>>> result.unstack()
+         a    b    f    g
+one    0.0  1.0  NaN  NaN
+two    0.0  1.0  NaN  NaN
+three  NaN  NaN  5.0  6.0
+>>> pd.concat([s1,s2,s3],axis=1,keys=['one','two','three'])
+   one  two  three
+a  0.0  NaN    NaN
+b  1.0  NaN    NaN
+c  NaN  2.0    NaN
+d  NaN  3.0    NaN
+e  NaN  4.0    NaN
+f  NaN  NaN    5.0
+g  NaN  NaN    6.0
+>>> #如果沿着axis=1对Series进行合并，则keys就会成为DataFrame的列头
+>>> df1=DataFrame(np.arange(6).reshape(3,2),index=['a','b','c'],columns=['one','two'])
+>>> df2=DataFrame(5+np.arange(4).reshape(2,2),index=['a','c'],columns=['three','four'])
+>>> pd.concat([df1,df2],axis=1,keys=['level1','level2'])
+  level1     level2     
+     one two  three four
+a      0   1    5.0  6.0
+b      2   3    NaN  NaN
+c      4   5    7.0  8.0
+>>> pd.concat({'level1':df1,'level2':df2},axis=1)
+  level1     level2     
+     one two  three four
+a      0   1    5.0  6.0
+b      2   3    NaN  NaN
+c      4   5    7.0  8.0
+>>> pd.concat([df1,df2],axis=1,keys=['level1','level2'],names=['upper','lower'])
+upper level1     level2     
+lower    one two  three four
+a          0   1    5.0  6.0
+b          2   3    NaN  NaN
+c          4   5    7.0  8.0
+>>> df1=DataFrame(np.random.randn(3,4),columns=['a','b','c','d'])
+>>> df2=DataFrame(np.random.randn(2,3),columns=['b','d','a'])
+>>> df1
+          a         b         c         d
+0  0.710214 -0.470484 -1.208146  0.203787
+1  1.049561 -0.891504 -1.154794  1.155787
+2  0.471315 -1.804562 -0.112889  0.223417
+>>> df2
+          b         d         a
+0 -1.890895 -0.659234 -0.339777
+1 -0.115062 -0.515415  1.815228
+>>> pd.concat([df1,df2],ignore_index=True)
+          a         b         c         d
+0  0.710214 -0.470484 -1.208146  0.203787
+1  1.049561 -0.891504 -1.154794  1.155787
+2  0.471315 -1.804562 -0.112889  0.223417
+3 -0.339777 -1.890895       NaN -0.659234
+4  1.815228 -0.115062       NaN -0.515415
+>>> #ignore_index：不保留连接轴上的索引，产生一组新索引range(total_
+>>> a=Series([np.nan,2.5,np.nan,3.5,4.5,np.nan],
+	     index=['f','e','d','c','b','a'])
+>>> b=Series(np.arange(len(a),dtype=np.float64),index=['f','e','d','c','b','a'])
+>>> b[-1]=np.nan
+>>> a
+f    NaN
+e    2.5
+d    NaN
+c    3.5
+b    4.5
+a    NaN
+dtype: float64
+>>> b
+f    0.0
+e    1.0
+d    2.0
+c    3.0
+b    4.0
+a    NaN
+dtype: float64
+>>> np.where(pd.isnull(a),b,a)
+array([0. , 2.5, 2. , 3.5, 4.5, nan])
+>>> b[:2].combine_first(a[2:])
+a    NaN
+b    4.5
+c    3.5
+d    NaN
+e    1.0
+f    0.0
+dtype: float64
+>>> df1=DataFrame({'a':[1.,np.nan,5.,np.nan],
+		   'b':[np.nan,2.,np.nan,6.],
+		   'c':range(2,18,4)})
+>>> df2=DataFrame({'a':[5.,4.,np.nan,3.,7.],
+		   'b':[np.nan,3.,4.,6.,8.]})
+>>> df1.combine_first(df2)
+     a    b     c
+0  1.0  NaN   2.0
+1  4.0  2.0   6.0
+2  5.0  4.0  10.0
+3  3.0  6.0  14.0
+4  7.0  8.0   NaN
+>>> data=DataFrame(np.arange(6).reshape((2,3)),
+		   index=pd.Index(['Ohio','Colorado'],name='state'),
+		   columns=pd.Index(['one','two','three'],name='number'))
+>>> data
+number    one  two  three
+state                    
+Ohio        0    1      2
+Colorado    3    4      5
+>>> result=data.stack()
+>>> result
+state     number
+Ohio      one       0
+          two       1
+          three     2
+Colorado  one       3
+          two       4
+          three     5
+dtype: int32
+>>> #使用该数据的stack方法即可将列转换为行
+>>> result.unstack()
+number    one  two  three
+state                    
+Ohio        0    1      2
+Colorado    3    4      5
+>>> #用unstack即可将数据重新排列为DataFrame
+>>> result.unstack(0)
+state   Ohio  Colorado
+number                
+one        0         3
+two        1         4
+three      2         5
+>>> result.unstack('state')
+state   Ohio  Colorado
+number                
+one        0         3
+two        1         4
+three      2         5
+>>> s1=Series([0,1,2,3],index=['a','b','c','d'])
+>>> s2=Series([4,5,6],index=['c','d','e'])
+>>> data2=pd.concat([s1,s2],keys=['one','two'])
+>>> data2.unstack()
+       a    b    c    d    e
+one  0.0  1.0  2.0  3.0  NaN
+two  NaN  NaN  4.0  5.0  6.0
+>>> data2.unstack().stack()
+one  a    0.0
+     b    1.0
+     c    2.0
+     d    3.0
+two  c    4.0
+     d    5.0
+     e    6.0
+dtype: float64
+>>> #stack默认滤除缺失数据
+>>> data2.unstack().stack(dropna=False)
+one  a    0.0
+     b    1.0
+     c    2.0
+     d    3.0
+     e    NaN
+two  a    NaN
+     b    NaN
+     c    4.0
+     d    5.0
+     e    6.0
+dtype: float64
+>>> df=DataFrame({'left':result,'right':result+5},columns=pd.Index(['left','right'],name='side'))
+>>> df
+side             left  right
+state    number             
+Ohio     one        0      5
+         two        1      6
+         three      2      7
+Colorado one        3      8
+         two        4      9
+         three      5     10
+>>> df.unstack('state')
+side   left          right         
+state  Ohio Colorado  Ohio Colorado
+number                             
+one       0        3     5        8
+two       1        4     6        9
+three     2        5     7       10
+>>> df.unstack('state').stack('side')
+state         Colorado  Ohio
+number side                 
+one    left          3     0
+       right         8     5
+two    left          4     1
+       right         9     6
+three  left          5     2
+       right        10     7
+
+
