@@ -526,5 +526,332 @@ two    left          4     1
        right         9     6
 three  left          5     2
        right        10     7
+>>> data=pd.DataFrame({"k1":["one","two"]*3+["two"],"k2":[1,1,2,3,3,4,4]})
+>>> data
+    k1  k2
+0  one   1
+1  two   1
+2  one   2
+3  two   3
+4  one   3
+5  two   4
+6  two   4
+>>> data.duplicated()
+0    False
+1    False
+2    False
+3    False
+4    False
+5    False
+6     True
+dtype: bool
+>>> #DataFrame的duplicated方法返回一个布尔型的Series，表示各行是否是重复行（前面出现过的行
+>>> data.drop_duplicates()
+    k1  k2
+0  one   1
+1  two   1
+2  one   2
+3  two   3
+4  one   3
+5  two   4
+>>> data['v1']=range(7)
+>>> data.drop_duplicates(['k1'])
+    k1  k2  v1
+0  one   1   0
+1  two   1   1
+>>> data.drop
+<bound method DataFrame.drop of     k1  k2  v1
+0  one   1   0
+1  two   1   1
+2  one   2   2
+3  two   3   3
+4  one   3   4
+5  two   4   5
+6  two   4   6>
+>>> data.drop_duplicates(['k1','k2'])
+    k1  k2  v1
+0  one   1   0
+1  two   1   1
+2  one   2   2
+3  two   3   3
+4  one   3   4
+5  two   4   5
+>>> data.drop_duplicates(['k1','k2'],keep='last')
+    k1  k2  v1
+0  one   1   0
+1  two   1   1
+2  one   2   2
+3  two   3   3
+4  one   3   4
+6  two   4   6
+>>> data=pd.DataFrame({'food':['bacon','pulled pork','bacon','Pastrami','corned beef','Bacon','Pastrami','honey ham','nova lox'],'ounces':[4,3,12,6,7.5,8,3,5,6]})
+>>> data
+          food  ounces
+0        bacon     4.0
+1  pulled pork     3.0
+2        bacon    12.0
+3     Pastrami     6.0
+4  corned beef     7.5
+5        Bacon     8.0
+6     Pastrami     3.0
+7    honey ham     5.0
+8     nova lox     6.0
+>>> meat_to_animal={'bacon':'pig','pulled pork':'pig','pastrami':'cow','corned beef':'cow','honey ham':'pig','nova lox':'salmon'}
+>>> lowercased=data['food'].str.lower()
+>>> lowercased
+0          bacon
+1    pulled pork
+2          bacon
+3       pastrami
+4    corned beef
+5          bacon
+6       pastrami
+7      honey ham
+8       nova lox
+Name: food, dtype: object
+>>> data['animal']=lowercased.map(meat_to_animal)
+>>> data
+          food  ounces  animal
+0        bacon     4.0     pig
+1  pulled pork     3.0     pig
+2        bacon    12.0     pig
+3     Pastrami     6.0     cow
+4  corned beef     7.5     cow
+5        Bacon     8.0     pig
+6     Pastrami     3.0     cow
+7    honey ham     5.0     pig
+8     nova lox     6.0  salmon
+>>> data['food'].map(lambda x:meat_to_animal[x.lower()])
+0       pig
+1       pig
+2       pig
+3       cow
+4       cow
+5       pig
+6       cow
+7       pig
+8    salmon
+Name: food, dtype: object
+>>> data=pd.Series([1.,-999,2.,-999,-1000,3])
+>>> data
+0       1.0
+1    -999.0
+2       2.0
+3    -999.0
+4   -1000.0
+5       3.0
+dtype: float64
+>>> data.replace(-999,np.nan)
+0       1.0
+1       NaN
+2       2.0
+3       NaN
+4   -1000.0
+5       3.0
+dtype: float64
+>>> data.replace([-999,-1000],[np.nan,0])
+0    1.0
+1    NaN
+2    2.0
+3    NaN
+4    0.0
+5    3.0
+dtype: float64
+>>> data.replace([-999,-1000],np.nan)
+0    1.0
+1    NaN
+2    2.0
+3    NaN
+4    NaN
+5    3.0
+dtype: float64
+>>> data.replace({-999:np.nan,-1000:0})
+0    1.0
+1    NaN
+2    2.0
+3    NaN
+4    0.0
+5    3.0
+dtype: float64
+>>> data=pd.DataFrame(np.arange(12).reshape((3,4)),index=['Ohio','Colorado','New York'],columns=['one','two','three','four'])
+>>> data
+          one  two  three  four
+Ohio        0    1      2     3
+Colorado    4    5      6     7
+New York    8    9     10    11
+>>> transform=lambda x:x[:4].upper()
+>>> data.index.map(transform)
+Index(['OHIO', 'COLO', 'NEW '], dtype='object')
+>>> #轴索引修改
+>>> data.index=data.index.map(transform)
+>>> data
+      one  two  three  four
+OHIO    0    1      2     3
+COLO    4    5      6     7
+NEW     8    9     10    11
+>>> data.rename(index=str.title,columns=str.upper)
+      ONE  TWO  THREE  FOUR
+Ohio    0    1      2     3
+Colo    4    5      6     7
+New     8    9     10    11
+>>> data.rename(index={'OHIO':'INDIANA'},columns={'three':'peekaboo'})
+         one  two  peekaboo  four
+INDIANA    0    1         2     3
+COLO       4    5         6     7
+NEW        8    9        10    11
+>>> data.rename(index={'OHIO':'INDIANA'},inplace=True)
+>>> data
+         one  two  three  four
+INDIANA    0    1      2     3
+COLO       4    5      6     7
+NEW        8    9     10    11
+>>> ages=[20,22,25,27,21,23,37,31,61,45,41,32]
+>>> bins=[18,25,35,60,100]
+>>> cats=pd.cut(ages,bins)
+>>> cats
+[(18, 25], (18, 25], (18, 25], (25, 35], (18, 25], ..., (25, 35], (60, 100], (35, 60], (35, 60], (25, 35]]
+Length: 12
+Categories (4, interval[int64]): [(18, 25] < (25, 35] < (35, 60] < (60, 100]]
+>>> cats.codes
+array([0, 0, 0, 1, 0, 0, 2, 1, 3, 2, 2, 1], dtype=int8)
+>>> cats.categories
+IntervalIndex([(18, 25], (25, 35], (35, 60], (60, 100]],
+              closed='right',
+              dtype='interval[int64]')
+>>> pd.value_counts(cats)
+(18, 25]     5
+(35, 60]     3
+(25, 35]     3
+(60, 100]    1
+dtype: int64
+>>> pd.cut(ages,[18,26,36,61,100],right=False)
+[[18, 26), [18, 26), [18, 26), [26, 36), [18, 26), ..., [26, 36), [61, 100), [36, 61), [36, 61), [26, 36)]
+Length: 12
+Categories (4, interval[int64]): [[18, 26) < [26, 36) < [36, 61) < [61, 100)]
+>>> #哪边是闭端可以通过right=False进行修改
+>>> group_names=['Youth','YoungAdult','MiddleAged','Senior']
+>>> pd.cut(ages,bins,labels=group_names)
+[Youth, Youth, Youth, YoungAdult, Youth, ..., YoungAdult, Senior, MiddleAged, MiddleAged, YoungAdult]
+Length: 12
+Categories (4, object): [Youth < YoungAdult < MiddleAged < Senior]
+>>> data=np.random.randn(20)
+>>> data
+array([-0.29997836,  0.45104818,  0.25799107,  1.60601473,  1.79351107,
+       -2.0606261 ,  0.28685958, -0.00228017, -2.0704189 ,  0.45464935,
+       -0.01464663,  0.25688272,  0.36880463, -1.06560587, -1.33109027,
+       -0.1107627 ,  1.59453768, -1.04754334,  0.83912252, -0.31216463])
+>>> pd.cut(data,4,precision=2)
+[(-1.1, -0.14], (-0.14, 0.83], (-0.14, 0.83], (0.83, 1.79], (0.83, 1.79], ..., (-0.14, 0.83], (0.83, 1.79], (-1.1, -0.14], (0.83, 1.79], (-1.1, -0.14]]
+Length: 20
+Categories (4, interval[float64]): [(-2.07, -1.1] < (-1.1, -0.14] < (-0.14, 0.83] < (0.83, 1.79]]
+>>> data=np.random.randn(1000)
+>>> cats=pd.qcut(data,4)
+>>> cats
+[(0.000226, 0.677], (-3.185, -0.695], (0.677, 3.1], (0.677, 3.1], (0.000226, 0.677], ..., (0.677, 3.1], (0.000226, 0.677], (-3.185, -0.695], (0.000226, 0.677], (0.677, 3.1]]
+Length: 1000
+Categories (4, interval[float64]): [(-3.185, -0.695] < (-0.695, 0.000226] < (0.000226, 0.677] <
+                                    (0.677, 3.1]]
+>>> pd.value_counts(cats)
+(0.677, 3.1]          250
+(0.000226, 0.677]     250
+(-0.695, 0.000226]    250
+(-3.185, -0.695]      250
+dtype: int64
+>>> pd.qcut(data,[0,0.1,0.5,0.9,1.])
+[(0.000226, 1.331], (-3.185, -1.275], (0.000226, 1.331], (0.000226, 1.331], (0.000226, 1.331], ..., (0.000226, 1.331], (0.000226, 1.331], (-3.185, -1.275], (0.000226, 1.331], (0.000226, 1.331]]
+Length: 1000
+Categories (4, interval[float64]): [(-3.185, -1.275] < (-1.275, 0.000226] < (0.000226, 1.331] <
+                                    (1.331, 3.1]]
+>>> data=pd.DataFrame(np.random.randn(1000,4))
+>>> data.describe()
+                 0            1            2            3
+count  1000.000000  1000.000000  1000.000000  1000.000000
+mean     -0.017200     0.033063     0.006971    -0.073231
+std       1.007444     1.010421     1.060354     0.994654
+min      -2.953618    -3.021222    -3.222788    -3.717752
+25%      -0.679562    -0.641962    -0.742753    -0.747698
+50%      -0.043524     0.055825     0.025145    -0.013840
+75%       0.646200     0.734867     0.718169     0.632214
+max       3.252478     3.001479     2.973103     2.664647
+>>> col=data[2]
+>>> col[np.abs(col)>3]
+458   -3.222788
+Name: 2, dtype: float64
+>>> data[(np.abs(data)>3).any(1)]
+            0         1         2         3
+21  -0.206549 -3.021222 -0.346772 -1.611652
+106  1.235482  0.736726 -1.491838 -3.717752
+166 -1.483439  3.001479  1.356934 -0.423457
+458  0.339622 -0.202714 -3.222788 -1.212373
+795  3.252478 -0.523062 -1.268629 -1.579846
+>>> data[np.abs(data)>3]=np.sign(data)*3
+>>> data.describe()
+                 0            1            2            3
+count  1000.000000  1000.000000  1000.000000  1000.000000
+mean     -0.017452     0.033083     0.007194    -0.072513
+std       1.006655     1.010353     1.059698     0.992278
+min      -2.953618    -3.000000    -3.000000    -3.000000
+25%      -0.679562    -0.641962    -0.742753    -0.747698
+50%      -0.043524     0.055825     0.025145    -0.013840
+75%       0.646200     0.734867     0.718169     0.632214
+max       3.000000     3.000000     2.973103     2.664647
+>>> np.sign(data).head()
+     0    1    2    3
+0 -1.0  1.0 -1.0 -1.0
+1  1.0  1.0  1.0  1.0
+2 -1.0  1.0 -1.0  1.0
+3  1.0  1.0  1.0 -1.0
+4  1.0  1.0  1.0  1.0
+>>> df=pd.DataFrame(np.arange(5*4).reshape((5,4)))
+>>> sampler=np.random.permutation(5)
+>>> sampler
+array([4, 1, 0, 3, 2])
+>>> df
+    0   1   2   3
+0   0   1   2   3
+1   4   5   6   7
+2   8   9  10  11
+3  12  13  14  15
+4  16  17  18  19
+>>> df.take(sampler)
+    0   1   2   3
+4  16  17  18  19
+1   4   5   6   7
+0   0   1   2   3
+3  12  13  14  15
+2   8   9  10  11
+>>> #take使得df按照新的sampler排序方法排序
+>>> df.sample(n=3)
+    0   1   2   3
+2   8   9  10  11
+1   4   5   6   7
+4  16  17  18  19
+>>> choices=pd.Series([5,7,-1,6,4])
+>>> draws=choices.sample(n=10,replace=True)
+>>> draws
+4    4
+4    4
+1    7
+0    5
+4    4
+4    4
+0    5
+1    7
+0    5
+4    4
+dtype: int64
+>>> #随机选取10个choices中的值，代替旧数组
+				
+
+
+
+
+
+
+
+
+
+
+
 
 
