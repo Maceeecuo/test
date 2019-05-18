@@ -841,7 +841,272 @@ array([4, 1, 0, 3, 2])
 4    4
 dtype: int64
 >>> #随机选取10个choices中的值，代替旧数组
-				
+>>> file='D:\python\pra\ex10.csv'
+>>> mnames=['movie_id','title','genres']
+>>> movies=pd.read_csv(file,sep='::',header=None,names=mnames)
+>>> movies
+                                             movie_id  title  genres
+0                           movie_id,,title,,,,genres    NaN     NaN
+1   1,,Toy Story (1995),,,,Animation|Children's|Co...    NaN     NaN
+2   2,,Jumanji (1995),,,,Adventure|Children's|Fantasy    NaN     NaN
+3        3,,Grumpier Old Men (1995),,,,Comedy|Romance    NaN     NaN
+4         4,,Waiting to Exhale (1995),,,,Comedy|Drama    NaN     NaN
+5     5,,Father of the Bride Part II (1995),,,,Comedy    NaN     NaN
+6             6,,Heat (1995),,,,Action|Crime|Thriller    NaN     NaN
+7                 7,,Sabrina (1995),,,,Comedy|Romance    NaN     NaN
+8      8,,Tom and Huck (1995),,,,Adventure|Children's    NaN     NaN
+9                    9,,Sudden Death (1995),,,,Action    NaN     NaN
+10  10,,GoldenEye (1995),,,,Action|Adventure|Thriller    NaN     NaN				
+>>> genres=pd.unique(all_genres)
+>>> genres
+array([], dtype=float64)
+>>> zero_matrix=np.zeros((len(movies),len(genres))
+SyntaxError: invalid syntax
+>>> dummies=pd.DataFrame(zero_matrix.columns=genres)
+			 
+SyntaxError: keyword can't be an expression
+>>> gen=movies.genres[0]
+			 
+>>> gen.split("|")
+			 
+Traceback (most recent call last):
+  File "<pyshell#61>", line 1, in <module>
+    gen.split("|")
+AttributeError: 'numpy.float64' object has no attribute 'split'
+>>> dummies.columns.get_indexer(gen.split("|"))
+			 
+Traceback (most recent call last):
+  File "<pyshell#62>", line 1, in <module>
+    dummies.columns.get_indexer(gen.split("|"))
+AttributeError: 'numpy.float64' object has no attribute 'split'
+>>> for i,gen in enumerate(movies.genres):
+	indices=dummies.columns.get_indexer(gen.split("|"))
+	dummies.iloc[i,indices]=1
+
+			 
+Traceback (most recent call last):
+  File "<pyshell#66>", line 2, in <module>
+    indices=dummies.columns.get_indexer(gen.split("|"))
+AttributeError: 'float' object has no attribute 'split'
+>>> np.random.seed(12345)
+			 
+>>> values=np.random.randn(10)
+			 
+>>> values
+			 
+array([-0.20470766,  0.47894334, -0.51943872, -0.5557303 ,  1.96578057,
+        1.39340583,  0.09290788,  0.28174615,  0.76902257,  1.24643474])
+>>> bins=[0,0.2,0.4,0.6,0.8,1]
+			 
+>>> pd.get_dummies(pd.cut(values,bins))
+			 
+   (0.0, 0.2]  (0.2, 0.4]  (0.4, 0.6]  (0.6, 0.8]  (0.8, 1.0]
+0           0           0           0           0           0
+1           0           0           1           0           0
+2           0           0           0           0           0
+3           0           0           0           0           0
+4           0           0           0           0           0
+5           0           0           0           0           0
+6           1           0           0           0           0
+7           0           1           0           0           0
+8           0           0           0           1           0
+9           0           0           0           0           0
+>>> val='a,b,guido'
+			 
+>>> val.split(',')
+			 
+['a', 'b', 'guido']
+>>> pieces=[x.strip() for x in val.split(',')]
+			 
+>>> pieces
+			 
+['a', 'b', 'guido']
+>>> first,second,third=pieces
+			 
+>>> first+'::'+second+'::'+third
+			 
+'a::b::guido'
+>>> '::'.join(pieces)
+			 
+'a::b::guido'
+>>> 'guido' in val
+			 
+True
+>>> val.index(',')
+			 
+1
+>>> val.find(':')
+			 
+-1
+>>> #如果找不到字符串，find返回-1，index返回异常
+			 
+>>> val.index(':')
+			 
+Traceback (most recent call last):
+  File "<pyshell#83>", line 1, in <module>
+    val.index(':')
+ValueError: substring not found
+>>> val.count(',')
+			 
+2
+>>> val.replace(',','::')
+			 
+'a::b::guido'
+>>> val.replace(',','')
+			 
+'abguido'
+>>> import re
+			 
+>>> text="foo bar\t baz   \tqux"
+			 
+>>> re.split("\s+",text)
+			 
+['foo', 'bar', 'baz', 'qux']
+>>> regex=re.compile("\s+")
+			 
+>>> regex.split(text)
+			 
+['foo', 'bar', 'baz', 'qux']
+>>> regex.findall(text)
+			 
+[' ', '\t ', '   \t']
+>>> text="""Dave dave@google.com
+Steve steve@gmail.com
+Rob rob@gmail.com
+Ryan ryan@yahoo.com
+"""
+>>> pattern=r'[A-Z0-9.%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}'
+			 
+>>> regex=re.compile(pattern,flags=re.IGNORECASE)
+			 
+>>> regex.findall(text)
+			 
+['dave@google.com', 'steve@gmail.com', 'rob@gmail.com', 'ryan@yahoo.com']
+>>> m=regex.search(text)
+			 
+>>> m
+			 
+<_sre.SRE_Match object; span=(5, 20), match='dave@google.com'>
+>>> text[m.start():m.end()]
+			 
+'dave@google.com'
+>>> print(regex.match(text))
+			 
+None
+>>> print(regex.sub('REDACTED',text))
+			 
+Dave REDACTED
+Steve REDACTED
+Rob REDACTED
+Ryan REDACTED
+
+>>> pattern = r'([A-Z0-9._%+-]+)@([A-Z0-9.-]+)\.([A-Z]{2,4})'
+			 
+>>> regex=re.compile(pattern,flags=re.IGNORECASE)
+			 
+>>> m=regex.match('wesm@bright.net')
+			 
+>>> m.groups()
+			 
+('wesm', 'bright', 'net')
+>>> regex.findall(text)
+			 
+[('dave', 'google', 'com'), ('steve', 'gmail', 'com'), ('rob', 'gmail', 'com'), ('ryan', 'yahoo', 'com')]
+>>> data={'Dave':'dave@google.com','Steve':'steve@gmail.com','Rob':'"rob@gmail.com','Wes':np.nan}
+>>> data=pd.Series(data)
+			 
+>>> data
+			 
+Dave     dave@google.com
+Steve    steve@gmail.com
+Rob       "rob@gmail.com
+Wes                  NaN
+dtype: object
+>>> data.isnull()
+			 
+Dave     False
+Steve    False
+Rob      False
+Wes       True
+dtype: bool
+>>> data.str.contains('gmail')
+			 
+Dave     False
+Steve     True
+Rob       True
+Wes        NaN
+dtype: object
+>>> pattern
+			 
+'([A-Z0-9._%+-]+)@([A-Z0-9.-]+)\\.([A-Z]{2,4})'
+>>> data.str.findall(pattern,flags=re.IGNORECASE)
+			 
+Dave     [(dave, google, com)]
+Steve    [(steve, gmail, com)]
+Rob        [(rob, gmail, com)]
+Wes                        NaN
+dtype: object
+>>> matches=data.str.match(pattern,flags=re.IGNORECASE)
+			 
+>>> matches
+			 
+Dave      True
+Steve     True
+Rob      False
+Wes        NaN
+dtype: object
+>>> matches.str.get(1)
+			 
+Dave    NaN
+Steve   NaN
+Rob     NaN
+Wes     NaN
+dtype: float64
+>>> matches.str[0]
+			 
+Dave    NaN
+Steve   NaN
+Rob     NaN
+Wes     NaN
+dtype: float64
+>>> data.str[:5]
+			 
+Dave     dave@
+Steve    steve
+Rob      "rob@
+Wes        NaN
+dtype: object
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
