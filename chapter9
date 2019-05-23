@@ -1,0 +1,146 @@
+import matplotlib.pyplot as plt
+>>> import numpy as np
+>>> import pandas as pd
+>>> from pandas import Series,DataFrame
+>>> data=np.arange(10)
+>>> data
+array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+>>> plt.plot(data)
+[<matplotlib.lines.Line2D object at 0x0000000006D9A3C8>]
+>>> plt.show()
+>>> fig=plt.figure()
+>>> ax1=fig.add_subplot(2,2,1)
+>>> ax2=fig.add_subplot(2,2,2)
+>>> ax3=fig.add_subplot(2,2,3)
+>>> plt.show()
+>>> plt.plot(np.random.randn(50).cumsum(),'k--')
+[<matplotlib.lines.Line2D object at 0x00000000071F2198>]
+>>> plt.show()
+>>> ax1.hist(np.random.randn(100),bins=20,color='k',alpha=0.3)
+(array([ 2.,  1.,  0.,  0.,  1.,  1.,  3.,  6., 10.,  9., 12.,  7., 16.,
+        9.,  9.,  7.,  5.,  0.,  0.,  2.]), array([-3.17135033, -2.87601742, -2.58068451, -2.2853516 , -1.99001869,
+       -1.69468578, -1.39935287, -1.10401996, -0.80868705, -0.51335414,
+       -0.21802123,  0.07731168,  0.37264459,  0.6679775 ,  0.96331042,
+        1.25864333,  1.55397624,  1.84930915,  2.14464206,  2.43997497,
+        2.73530788]), <a list of 20 Patch objects>)
+>>> ax2.scatter(np.arange(30),np.arange(30)+3*np.random.randn(30))
+<matplotlib.collections.PathCollection object at 0x000000000716AEF0>        
+>>> plt.show()
+>>> fig,axes=plt.subplots(2,3)
+>>> axes
+array([[<matplotlib.axes._subplots.AxesSubplot object at 0x000000000738FD30>,
+        <matplotlib.axes._subplots.AxesSubplot object at 0x00000000073BC278>,
+        <matplotlib.axes._subplots.AxesSubplot object at 0x00000000073E47F0>],
+       [<matplotlib.axes._subplots.AxesSubplot object at 0x00000000082BBD68>,
+        <matplotlib.axes._subplots.AxesSubplot object at 0x00000000082ED320>,
+        <matplotlib.axes._subplots.AxesSubplot object at 0x0000000008313898>]],
+      dtype=object)
+>>> plt.show()
+>>> subplots_adjust(left=None,bottom=None,right=None,top=None,wspace=None,hspace=None)
+Traceback (most recent call last):
+  File "<pyshell#27>", line 1, in <module>
+    subplots_adjust(left=None,bottom=None,right=None,top=None,wspace=None,hspace=None)
+NameError: name 'subplots_adjust' is not defined
+>>> subplots_adjust(left=None,bottom=None,right=None,top=None,wspace=None,hspace=None)
+Traceback (most recent call last):
+  File "<pyshell#28>", line 1, in <module>
+    subplots_adjust(left=None,bottom=None,right=None,top=None,wspace=None,hspace=None)
+NameError: name 'subplots_adjust' is not defined
+>>> fig,axes=plt.subplots(2,2,sharex=True,sharey=True)
+>>> for i in range(2):
+	for j in range(2):
+		axes[i,j].hist(np.random.randn(500),bins=50,color='k',alpha=0.5)
+
+		
+(array([ 1.,  0.,  0.,  3.,  0.,  1.,  2.,  0.,  6.,  3.,  2., 12.,  7.,
+       13., 14., 11., 17., 17., 22., 20., 19., 22., 25., 18., 33., 24.,
+       29., 19., 11., 21., 21., 17.,  9., 16., 15., 13.,  8.,  3., 10.,
+        4.,  3.,  3.,  2.,  1.,  1.,  0.,  0.,  1.,  0.,  1.]), array([-3.11799842, -2.99083429, -2.86367015, -2.73650602, -2.60934189,
+       -2.48217775, -2.35501362, -2.22784949, -2.10068536, -1.97352122,
+       -1.84635709, -1.71919296, -1.59202882, -1.46486469, -1.33770056,
+       -1.21053643, -1.08337229, -0.95620816, -0.82904403, -0.70187989,
+       -0.57471576, -0.44755163, -0.3203875 , -0.19322336, -0.06605923,
+        0.0611049 ,  0.18826904,  0.31543317,  0.4425973 ,  0.56976143,
+        0.69692557,  0.8240897 ,  0.95125383,  1.07841797,  1.2055821 ,
+        1.33274623,  1.45991037,  1.5870745 ,  1.71423863,  1.84140276,
+        1.9685669 ,  2.09573103,  2.22289516,  2.3500593 ,  2.47722343,
+        2.60438756,  2.73155169,  2.85871583,  2.98587996,  3.11304409,
+        3.24020823]), <a list of 50 Patch objects>)
+(array([ 1.,  1.,  1.,  0.,  0.,  1.,  5.,  4.,  5.,  4.,  7.,  8., 14.,
+       24., 14., 14., 27., 12., 17., 22., 23., 19., 24., 25., 24., 18.,
+       19., 25., 24., 15., 19., 18., 13., 12., 11.,  7.,  6.,  3.,  3.,
+        2.,  4.,  0.,  1.,  1.,  1.,  0.,  0.,  0.,  0.,  2.]), array([-2.84087557, -2.71962103, -2.59836649, -2.47711194, -2.3558574 ,
+       -2.23460285, -2.11334831, -1.99209376, -1.87083922, -1.74958468,
+       -1.62833013, -1.50707559, -1.38582104, -1.2645665 , -1.14331195,
+       -1.02205741, -0.90080287, -0.77954832, -0.65829378, -0.53703923,
+       -0.41578469, -0.29453014, -0.1732756 , -0.05202106,  0.06923349,
+        0.19048803,  0.31174258,  0.43299712,  0.55425167,  0.67550621,
+        0.79676075,  0.9180153 ,  1.03926984,  1.16052439,  1.28177893,
+        1.40303348,  1.52428802,  1.64554256,  1.76679711,  1.88805165,
+        2.0093062 ,  2.13056074,  2.25181529,  2.37306983,  2.49432437,
+        2.61557892,  2.73683346,  2.85808801,  2.97934255,  3.1005971 ,
+        3.22185164]), <a list of 50 Patch objects>)
+(array([ 2.,  0.,  1.,  2.,  1.,  1.,  1.,  2.,  3.,  2.,  3., 11.,  6.,
+        8., 11., 12., 13.,  8., 13., 20., 16., 21., 25., 26., 25., 30.,
+       28., 24., 20., 25., 16., 10., 15.,  9., 17., 16.,  9., 17.,  8.,
+        6.,  3.,  5.,  2.,  3.,  1.,  1.,  0.,  0.,  0.,  2.]), array([-3.31291865, -3.18405766, -3.05519667, -2.92633568, -2.79747468,
+       -2.66861369, -2.5397527 , -2.41089171, -2.28203072, -2.15316972,
+       -2.02430873, -1.89544774, -1.76658675, -1.63772576, -1.50886476,
+       -1.38000377, -1.25114278, -1.12228179, -0.9934208 , -0.8645598 ,
+       -0.73569881, -0.60683782, -0.47797683, -0.34911584, -0.22025484,
+       -0.09139385,  0.03746714,  0.16632813,  0.29518912,  0.42405012,
+        0.55291111,  0.6817721 ,  0.81063309,  0.93949408,  1.06835508,
+        1.19721607,  1.32607706,  1.45493805,  1.58379904,  1.71266004,
+        1.84152103,  1.97038202,  2.09924301,  2.228104  ,  2.356965  ,
+        2.48582599,  2.61468698,  2.74354797,  2.87240896,  3.00126996,
+        3.13013095]), <a list of 50 Patch objects>)
+(array([ 1.,  1.,  0.,  1.,  0.,  2.,  2.,  2.,  3.,  8.,  7.,  5.,  5.,
+        5.,  9., 11., 10., 11., 20., 10., 20., 23., 23., 21., 23., 24.,
+       19., 14., 19., 28., 22., 17., 16., 23., 12.,  6., 14., 19.,  7.,
+        6.,  8.,  5.,  6.,  2.,  4.,  2.,  2.,  0.,  0.,  2.]), array([-3.07277504, -2.95556663, -2.83835823, -2.72114982, -2.60394142,
+       -2.48673301, -2.3695246 , -2.2523162 , -2.13510779, -2.01789939,
+       -1.90069098, -1.78348257, -1.66627417, -1.54906576, -1.43185736,
+       -1.31464895, -1.19744054, -1.08023214, -0.96302373, -0.84581533,
+       -0.72860692, -0.61139851, -0.49419011, -0.3769817 , -0.2597733 ,
+       -0.14256489, -0.02535649,  0.09185192,  0.20906033,  0.32626873,
+        0.44347714,  0.56068554,  0.67789395,  0.79510236,  0.91231076,
+        1.02951917,  1.14672757,  1.26393598,  1.38114439,  1.49835279,
+        1.6155612 ,  1.7327696 ,  1.84997801,  1.96718642,  2.08439482,
+        2.20160323,  2.31881163,  2.43602004,  2.55322845,  2.67043685,
+        2.78764526]), <a list of 50 Patch objects>)
+>>> plt.subplots_adjust(wspace=0,hspace=0)
+>>> plt.show()
+>>> data=np.random.randn(30).cumsum()
+>>> plt.plot(data,'k--',label='Default')
+[<matplotlib.lines.Line2D object at 0x000000000A1E0390>]
+>>> plt.plot(data,'k--',drawstyle='steps-post',label='steps-post')
+[<matplotlib.lines.Line2D object at 0x0000000008C31940>]
+>>> plt.legend(loc='best')
+<matplotlib.legend.Legend object at 0x000000000A1E0780>
+>>> plt.show()
+>>> ax=fig.add_subplot(1,1,1)
+>>> ax.plot(np.random.randn(1000).cumsum())
+[<matplotlib.lines.Line2D object at 0x0000000008F280F0>]
+>>> plt.show()
+>>> ticks=ax.set_xticks([0,250,500,750,1000])
+>>> labels=ax.set_xticklabels(['one','two','three','four','five'],rotation=30,fontsize='small')
+>>> ax.set_title('My first matplotlib plot')
+Text(0.5, 1.0, 'My first matplotlib plot')
+>>> ax.set_xlabel('Stages')
+Text(0.5, 23.52222222222222, 'Stages')
+>>> plt.show()
+>>> props={
+	'title':'My first matplotlib plot',
+	'xlabel':'Stages'
+	}
+>>> ax.set(**props)
+[Text(0.5, 23.52222222222222, 'Stages'), Text(0.5, 1.0, 'My first matplotlib plot')]
+>>> plt.show()
+>>> fig=plt.figure();ax=fig.add_subplot(1,1,1)
+>>> ax.plot(randn(1000).cumsum(),'k',label='one')
+[<matplotlib.lines.Line2D object at 0x000000000A0C14A8>]
+>>> ax.plot(randn(1000).cumsum(),'k--',label='two')
+[<matplotlib.lines.Line2D object at 0x000000000A0C1470>]
+>>> ax.plot(randn(1000).cumsum(),'k.',label='three')
+[<matplotlib.lines.Line2D object at 0x000000000A0C1828>]
+>>> plt.show()
