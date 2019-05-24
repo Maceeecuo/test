@@ -144,3 +144,146 @@ Text(0.5, 23.52222222222222, 'Stages')
 >>> ax.plot(randn(1000).cumsum(),'k.',label='three')
 [<matplotlib.lines.Line2D object at 0x000000000A0C1828>]
 >>> plt.show()
+>>> from datetime import datetime
+>>> fig=plt.figure()
+>>> ax=fig.add_subplot(1,1,1)
+file='D:\python\pra\spx.csv'
+>>> data=pd.read_csv(file,index_col=0,parse_dates=True)
+>>> spx=data['SPX']
+>>> spx.plot(ax=ax,style='k-')
+<matplotlib.axes._subplots.AxesSubplot object at 0x0000000003492390>
+>>> plt.show()
+>>> for date,label in crisis_data:
+	ax.annotate(label,xy=(date,spx.asof(date)+75),
+		    xytext=(date,spx.asof(date)+225),
+		    arrowprops=dict(facecolor='black',headwidth=4,width=2,
+				    headlength=4),
+		    horizontalalignment='left',verticalalignment='top')
+
+	
+Text(2007-10-11 00:00:00, 1779.41, 'Peak of bull market')
+Text(2008-03-12 00:00:00, 1533.77, 'Bear Stearns Fails')
+Text(2008-09-15 00:00:00, 1417.7, 'Lehman Bankruptcy')
+>>> ax.set_xlim(['1/1/2007','1/1/2008'])
+(732677.0, 733042.0)
+>>> ax.set_ylim([600,1800])
+(600, 1800)
+>>> ax.set_title('Important dates in the 2008-2009 financial crisis')
+Text(0.5, 1.0, 'Important dates in the 2008-2009 financial crisis')
+>>> fig=plt.figure()
+>>> ax=fig.add_subplot(1,1,1)
+>>> rect=plt.Rectangle((0.2,0.75),0.4,0.15,color='k',alpha=0.3)
+>>> circ=plt.Circle((0.7,0.2),0.15,color='b',alpha=0.3)
+>>> pgon=plt.Polygon([[0.15,0.15],[0.35,0.4],[0.2,0.6]],color='g',alpha=0.5)
+>>> ax.add_patch(rect)
+<matplotlib.patches.Rectangle object at 0x00000000071B95F8>
+>>> ax.add_patch(circ)
+<matplotlib.patches.Circle object at 0x00000000071B9588>
+>>> ax.add_patch(pgon)
+<matplotlib.patches.Polygon object at 0x00000000071B95C0>
+>>> plt.show()
+>>> from io import BytesIO
+>>> buffer=BytesIO()
+>>> plt.savefig(buffer)
+>>> plot_data=buffer.getvalue()
+>>> plt.rc('figure',figsize=(10,10))
+>>> font_options={'family':'monospace','weight':'bold','size':'small'}
+>>> plt.rc('font',**font_options)
+Traceback (most recent call last):
+  File "D:\python\python3.6.6\lib\site-packages\matplotlib\rcsetup.py", line 147, in validate_float
+    return float(s)
+ValueError: could not convert string to float: 'small'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\python\python3.6.6\lib\site-packages\matplotlib\__init__.py", line 861, in __setitem__
+    cval = self.validate[key](val)
+  File "D:\python\python3.6.6\lib\site-packages\matplotlib\rcsetup.py", line 149, in validate_float
+    raise ValueError('Could not convert "%s" to float' % s)
+ValueError: Could not convert "small" to float
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<pyshell#73>", line 1, in <module>
+    plt.rc('font',**font_options)
+  File "D:\python\python3.6.6\lib\site-packages\matplotlib\pyplot.py", line 302, in rc
+    matplotlib.rc(group, **kwargs)
+  File "D:\python\python3.6.6\lib\site-packages\matplotlib\__init__.py", line 1200, in rc
+    rcParams[key] = v
+  File "D:\python\python3.6.6\lib\site-packages\matplotlib\__init__.py", line 863, in __setitem__
+    raise ValueError("Key %s: %s" % (key, str(ve)))
+ValueError: Key font.size: Could not convert "small" to float
+>>> s=pd.Series(np.random.randn(10).cumsum(),index=np.arange(0,100,10))
+>>> s.plot()
+<matplotlib.axes._subplots.AxesSubplot object at 0x00000000087BBFD0>
+>>> plt.show()
+>>> df=pd.DataFrame(np.random.randn(10,4).cumsum(0),
+		    columns=['A','B','C','D'],
+		    index=np.arange(0,100,10))
+>>> df.plot()
+<matplotlib.axes._subplots.AxesSubplot object at 0x00000000071B9278>
+>>> plt.show()
+>>> fig,axes=plt.subplots(2,1)
+>>> data=pd.Series(np.random.rand(16),index=list('abcdefghijklmnop'))
+>>> data.plot.bar(ax=axes[0],color='k',alpha=0.7)
+<matplotlib.axes._subplots.AxesSubplot object at 0x00000000089286D8>
+>>> data.plot.barh(ax=axes[1],color='k',alpha=0.7)
+<matplotlib.axes._subplots.AxesSubplot object at 0x000000000896FF60>
+>>> plt.show()
+>>> file='D:\python\pra\tips.csv'
+>>> tips=pd.read_csv(file)
+Traceback (most recent call last):
+  File "<pyshell#104>", line 1, in <module>
+    tips=pd.read_csv(file)
+  File "D:\python\python3.6.6\lib\site-packages\pandas\io\parsers.py", line 702, in parser_f
+    return _read(filepath_or_buffer, kwds)
+  File "D:\python\python3.6.6\lib\site-packages\pandas\io\parsers.py", line 429, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "D:\python\python3.6.6\lib\site-packages\pandas\io\parsers.py", line 895, in __init__
+    self._make_engine(self.engine)
+  File "D:\python\python3.6.6\lib\site-packages\pandas\io\parsers.py", line 1122, in _make_engine
+    self._engine = CParserWrapper(self.f, **self.options)
+  File "D:\python\python3.6.6\lib\site-packages\pandas\io\parsers.py", line 1853, in __init__
+    self._reader = parsers.TextReader(src, **kwds)
+  File "pandas\_libs\parsers.pyx", line 387, in pandas._libs.parsers.TextReader.__cinit__
+  File "pandas\_libs\parsers.pyx", line 705, in pandas._libs.parsers.TextReader._setup_parser_source
+FileNotFoundError: [Errno 2] File b'D:\\python\\pra\tips.csv' does not exist: b'D:\\python\\pra\tips.csv'
+(明明就有这个文件！！！)
+>>> import seaborn as sns
+Traceback (most recent call last):
+  File "<pyshell#118>", line 1, in <module>
+    import seaborn as sns
+ModuleNotFoundError: No module named 'seaborn'
+>>> comp1=np.random.normal(0,1,size=200)
+>>> comp2=np.random.normal(10,2,size=200)
+>>> values=pd.Series(np.concatenate([comp1,comp2]))
+>>> sns.distplot(vales,bins=100,color='k')
+Traceback (most recent call last):
+  File "<pyshell#110>", line 1, in <module>
+    sns.distplot(vales,bins=100,color='k')
+NameError: name 'sns' is not defined
+>>> file='D:\python\pra\macrodata.csv'
+>>> macro=pd.read_csv(file)
+>>> data=macro[['cpi','m1','tbilrate','unemp']]
+>>> trans_data=np.log(data).diff().dropna()
+>>> trans_data[-5:]
+          cpi        m1  tbilrate     unemp
+198 -0.007904  0.045361 -0.396881  0.105361
+199 -0.021979  0.066753 -2.277267  0.139762
+200  0.002340  0.010286  0.606136  0.160343
+201  0.008419  0.037461 -0.200671  0.127339
+202  0.008894  0.012202 -0.405465  0.042560
+>>> sns.replot('m1','unemp',data=trans_data)
+Traceback (most recent call last):
+  File "<pyshell#119>", line 1, in <module>
+    sns.replot('m1','unemp',data=trans_data)
+NameError: name 'sns' is not defined
+>>> plt.title('Changes in log %s versus log %s' % ('m1','unemp'))
+Text(0.5, 1.0, 'Changes in log m1 versus log unemp')
+>>> sns.pairplot(trans_data,diag_kind='kde',plot_kws={'alpha':0.2})
+Traceback (most recent call last):
+  File "<pyshell#121>", line 1, in <module>
+    sns.pairplot(trans_data,diag_kind='kde',plot_kws={'alpha':0.2})
+NameError: name 'sns' is not defined
