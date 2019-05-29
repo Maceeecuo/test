@@ -18,6 +18,26 @@ date        0
 quantity    0
 price       0
 dtype: int64
+>>> df.price.describe()
+count    69659.000000
+mean        35.893648
+std         36.281942
+min          0.000000
+25%         14.490000
+50%         25.980000
+75%         43.700000
+max       1286.010000
+Name: price, dtype: float64
+>>> df.quantity.describe()
+count    69659.000000
+mean         2.410040
+std          2.333924
+min          1.000000
+25%          1.000000
+50%          2.000000
+75%          3.000000
+max         99.000000
+Name: quantity, dtype: float64
 >>> df.groupby('date').sum()
              user  quantity     price
 date                                 
@@ -536,4 +556,34 @@ user
 23570     2         2      2
 
 [23570 rows x 3 columns]
-
+>>> df['date']=pd.to_datetime(df['date'],format='%Y%m%d')
+>>> df=df.set_index('date',drop=True)
+>>> month_grouped=df.resample('m').agg({'user':'count','quantity':'sum','price':'sum'})
+>>> month_grouped['user_sum']=df.resample('m')['user'].nunique()
+>>> print(month_grouped)
+             user  quantity      price  user_sum
+date                                            
+1997-01-31   8928     19416  299060.17      7846
+1997-02-28  11272     24921  379590.03      9633
+1997-03-31  11598     26159  393155.27      9524
+1997-04-30   3781      9729  142824.49      2822
+1997-05-31   2895      7275  107933.30      2214
+1997-06-30   3054      7301  108395.87      2339
+1997-07-31   2942      8131  122078.88      2180
+1997-08-31   2320      5851   88367.69      1772
+1997-09-30   2296      5729   81948.80      1739
+1997-10-31   2562      6203   89780.77      1839
+1997-11-30   2750      7812  115448.64      2028
+1997-12-31   2504      6418   95577.35      1864
+1998-01-31   2032      5278   76756.78      1537
+1998-02-28   2026      5340   77096.96      1551
+1998-03-31   2793      7431  108970.15      2060
+1998-04-30   1878      4697   66231.52      1437
+1998-05-31   1985      4903   70989.66      1488
+1998-06-30   2043      5287   76109.30      1506
+>>> df.drop_duplicates('user')['user'].resample('m').count()
+date
+1997-01-31    7846
+1997-02-28    8476
+1997-03-31    7248
+Freq: M, Name: user, dtype: int64
